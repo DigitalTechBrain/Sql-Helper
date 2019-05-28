@@ -1,0 +1,178 @@
+
+
+SqlHelper class can be downloaded by downloading the Microsoft Data Access Application Block and it is a great utility that helps us to reduce ADO.Net code used in day to day programming.
+ 
+Database
+I have made use of the following table Customers with the schema as follows.
+Using SqlHelper class in ASP.Net Tutorial with examples in C# and VB.Net
+ 
+I have already inserted few records in the table.
+Using SqlHelper class in ASP.Net Tutorial with examples in C# and VB.Net
+ 
+Note: You can download the database table SQL by clicking the download link below.
+         Download SQL file
+ 
+ 
+Downloading and Installing the Microsoft Data Access Application Block
+First you will need to download the setup file of the Microsoft Data Access Application Block using the following download link.
+Download Microsoft Data Access Application Block
+Using SqlHelper class in ASP.Net Tutorial with examples in C# and VB.Net
+ 
+Once downloaded you will need to install the Setup file. During installation the installer will prompt to choose the installation files location. You need to copy the installation path as it will be needed later to locate the Microsoft.ApplicationBlocks.Data.dll file.
+Using SqlHelper class in ASP.Net Tutorial with examples in C# and VB.Net
+ 
+Once the installation is completed, you will need to browse the location copied earlier using Windows Explorer and look for the Microsoft.ApplicationBlocks.Data.dll in the following location.
+<Program Files Folder>Microsoft Application Blocks for .NET\Data Access v2\Code\CS\Microsoft.ApplicationBlocks.Data\bin\Debug
+ 
+Using SqlHelper class in ASP.Net Tutorial with examples in C# and VB.Net
+Now you need to reference this DLL in your projects where you wish to use the SqlHelper class.
+ 
+ 
+Using SqlHelper class in ASP.Net with C# and VB.Net
+Now we will start exploring the examples of the following SqlHelper class methods.
+1. ExecuteNonQuery – Executing INSERT, UPDATE and DELETE statements.
+2. ExecuteScalar – Fetching single cell value. Generally helpful when we need to fetch SCOPE_IDENTITY value.
+3. ExecuteReader – Fetching data using a SqlDataReader.
+4. ExecuteDataset – Fetching DataSet of records.
+ 
+ 
+Namespaces
+You will need to import the following namespaces.
+C#
+using System.Data;
+using System.Configuration;
+using System.Data.SqlClient;
+using Microsoft.ApplicationBlocks.Data;
+ 
+VB.Net
+Imports System.Data
+Imports System.Configuration
+Imports System.Data.SqlClient
+Imports Microsoft.ApplicationBlocks.Data
+ 
+ 
+ExecuteNonQuery Example with SqlHelper class
+In the below example, I am inserting a record in the Customers Table using ExecuteNonQuery method of SqlHelper class. It accepts the following 4 parameters.
+1. Connection String – Connection string to the database.
+2. CommandType – Value passed is Text for a SQL Query and StoredProcedure for a Stored Procedure.
+3. CommandText – The SQL Query or the name of the Stored Procedure.
+4. CommandParameters (Optional) – Array of Parameters to be passed.
+It returns the number of rows affected which is an INTEGER value.
+C#
+protected void ExecuteNonQuery(object sender, EventArgs e)
+{
+    string name = txtName1.Text;
+    string country = txtCountry1.Text;
+    string constr = ConfigurationManager.ConnectionStrings["constr"].ConnectionString;
+    string query = "INSERT INTO Customers (Name, Country) VALUES (@Name, @Country)";
+    List<SqlParameter> parameters = new List<SqlParameter>();
+    parameters.Add(new SqlParameter("@Name", name));
+    parameters.Add(new SqlParameter("@Country", country));
+    int rowsAffected = SqlHelper.ExecuteNonQuery(constr, CommandType.Text, query, parameters.ToArray());
+}
+ 
+VB.Net
+Protected Sub ExecuteNonQuery(sender As Object, e As EventArgs)
+    Dim name As String = txtName1.Text
+    Dim country As String = txtCountry1.Text
+    Dim constr As String = ConfigurationManager.ConnectionStrings("constr").ConnectionString
+    Dim query As String = "INSERT INTO Customers (Name, Country) VALUES (@Name, @Country)"
+    Dim parameters As New List(Of SqlParameter)()
+    parameters.Add(New SqlParameter("@Name", name))
+    parameters.Add(New SqlParameter("@Country", country))
+    Dim rowsAffected As Integer = SqlHelper.ExecuteNonQuery(constr, CommandType.Text, query, parameters.ToArray())
+End Sub
+ 
+ 
+ExecuteScalar Example with SqlHelper class
+In the below example, I am inserting a record in the Customers Table using ExecuteScalar method of SqlHelper class. It accepts the following 4 parameters.
+1. Connection String – Connection string to the database.
+2. CommandType – Value passed is Text for a SQL Query and StoredProcedure for a Stored Procedure.
+3. CommandText – The SQL Query or the name of the Stored Procedure.
+4. CommandParameters (Optional) – Array of Parameters to be passed.
+It returns the object of the Cell value selected in the SQL Query.
+C#
+protected void ExecuteScalar(object sender, EventArgs e)
+{
+    string name = txtName2.Text;
+    string country = txtCountry2.Text;
+    string constr = ConfigurationManager.ConnectionStrings["constr"].ConnectionString;
+    string query = "INSERT INTO Customers (Name, Country) VALUES (@Name, @Country);SELECT SCOPE_IDENTITY();";
+    List<SqlParameter> parameters = new List<SqlParameter>();
+    parameters.Add(new SqlParameter("@Name", name));
+    parameters.Add(new SqlParameter("@Country", country));
+    int customerId = Convert.ToInt32(SqlHelper.ExecuteScalar(constr, CommandType.Text, query, parameters.ToArray()));
+    ClientScript.RegisterClientScriptBlock(this.GetType(), "alert", "alert('Inserted CustomerId: " + customerId + "');", true);
+}
+ 
+VB.Net
+Protected Sub ExecuteScalar(sender As Object, e As EventArgs)
+    Dim name As String = txtName2.Text
+    Dim country As String = txtCountry2.Text
+    Dim constr As String = ConfigurationManager.ConnectionStrings("constr").ConnectionString
+    Dim query As String = "INSERT INTO Customers (Name, Country) VALUES (@Name, @Country);SELECT SCOPE_IDENTITY();"
+    Dim parameters As New List(Of SqlParameter)()
+    parameters.Add(New SqlParameter("@Name", name))
+    parameters.Add(New SqlParameter("@Country", country))
+    Dim customerId As Integer = Convert.ToInt32(SqlHelper.ExecuteScalar(constr, CommandType.Text, query, parameters.ToArray()))
+    ClientScript.RegisterClientScriptBlock(Me.GetType(), "alert", "alert('Inserted CustomerId: " & customerId & "');", True)
+End Sub
+ 
+ 
+ExecuteReader Example with SqlHelper class
+In the below example, I am fetching records from the Customers Table using ExecuteReader method of SqlHelper class. It accepts the following 4 parameters.
+1. Connection String – Connection string to the database.
+2. CommandType – Value passed is Text for a SQL Query and StoredProcedure for a Stored Procedure.
+3. CommandText – The SQL Query or the name of the Stored Procedure.
+4. CommandParameters (Optional) – Array of Parameters to be passed.
+It returns the SqlDataReader object, which can be used in loop for reading records one by one and also can be directly assigned to a DataSource control.
+C#
+private void BindReader()
+{
+    string constr = ConfigurationManager.ConnectionStrings["constr"].ConnectionString;
+    string query = "SELECT CustomerId, Name, Country FROM Customers";
+    SqlDataReader sdr = SqlHelper.ExecuteReader(constr, CommandType.Text, query);
+    GridView2.DataSource = sdr;
+    GridView2.DataBind();
+}
+ 
+VB.Net
+Private Sub BindReader()
+    Dim constr As String = ConfigurationManager.ConnectionStrings("constr").ConnectionString
+    Dim query As String = "SELECT CustomerId, Name, Country FROM Customers"
+    Dim sdr As SqlDataReader = SqlHelper.ExecuteReader(constr, CommandType.Text, query)
+    GridView2.DataSource = sdr
+    GridView2.DataBind()
+End Sub
+ 
+ 
+ExecuteDataset Example with SqlHelper class
+In the below example, I am fetching records from the Customers Table using ExecuteDataset method of SqlHelper class. It accepts the following 4 parameters.
+1. Connection String – Connection string to the database.
+2. CommandType – Value passed is Text for a SQL Query and StoredProcedure for a Stored Procedure.
+3. CommandText – The SQL Query or the name of the Stored Procedure.
+4. CommandParameters (Optional) – Array of Parameters to be passed.
+It returns the DataSet object which can contain single or multiple Tables containing records and can be used to populate controls like GridView, Repeater, etc.
+C#
+private void BindDataSet()
+{
+    string constr = ConfigurationManager.ConnectionStrings["constr"].ConnectionString;
+    string query = "SELECT CustomerId, Name, Country FROM Customers";
+    DataSet ds = SqlHelper.ExecuteDataset(constr, CommandType.Text, query);
+    GridView1.DataSource = ds.Tables[0];
+    GridView1.DataBind();
+}
+ 
+VB.Net
+Private Sub BindDataSet()
+    Dim constr As String = ConfigurationManager.ConnectionStrings("constr").ConnectionString
+    Dim query As String = "SELECT CustomerId, Name, Country FROM Customers"
+    Dim ds As DataSet = SqlHelper.ExecuteDataset(constr, CommandType.Text, query)
+    GridView1.DataSource = ds.Tables(0)
+    GridView1.DataBind()
+End Sub
+ 
+ 
+Downloads
+ 
+
