@@ -20,6 +20,28 @@ namespace SqlHelperTesting
 
         protected void Button1_Click(object sender, EventArgs e)
         {
+            ExecuteProcedure();
+
+        }
+
+        void ExecuteProcedure()
+        {
+            string name = "BB";
+            string country = "Vines";
+            string constr = ConfigurationManager.ConnectionStrings["DfltConnection"].ConnectionString;
+            string query = "tCostumer";
+            List<SqlParameter> parameters = new List<SqlParameter>();
+            parameters.Add(new SqlParameter("@cName", name));
+            parameters.Add(new SqlParameter("@cAddress", country));
+
+
+
+
+            int rowsAffected = SqlHelper.ExecuteNonQuery(constr, CommandType.StoredProcedure, query, parameters.ToArray());
+        }
+
+        void ExecuteNonQuery()
+        {
             string name = "Jack";
             string country = "India";
             string constr = ConfigurationManager.ConnectionStrings["DfltConnection"].ConnectionString;
@@ -27,6 +49,10 @@ namespace SqlHelperTesting
             List<SqlParameter> parameters = new List<SqlParameter>();
             parameters.Add(new SqlParameter("@Name", name));
             parameters.Add(new SqlParameter("@Country", country));
+
+
+
+
             int rowsAffected = SqlHelper.ExecuteNonQuery(constr, CommandType.Text, query, parameters.ToArray());
         }
 
